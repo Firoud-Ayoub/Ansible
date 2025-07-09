@@ -2,9 +2,10 @@
 
 - hosts: all
   become: true
-  tasks:
+  pre_tasks:
 
-  - name: intall update (CentOS)
+  - name: install update (CentOS)
+    tags: always
     yum:
       update_only: yes
       update_cache: yes
@@ -15,24 +16,62 @@
   tasks:
 
   - name: install httpd and php 
-    yum
-      name:
-       - httpd
-       - php
-      state: latest
-    when: ansible_distribution == "CentOS"  
-     
-
-
-
-
-
-
-
-  - name: install httpd and php  packages
+    tags: httpd,php
     yum:
       name:
        - httpd
        - php
       state: latest
-    when: ansible_distribution == "CentOS"
+    when: ansible_distribution == "CentOS"  
+
+  - name: copy the web_site.html
+    tags: httpd
+    copy:
+      src: web_site.html
+      dest: /var/www/html/index.html
+      owner: root
+      group: root
+      mode: 0644
+     
+
+- hosts: file_servers
+  become: true
+  tasks:
+
+  - name: install samba package
+    tags: samba
+    package:
+      name: samba
+      state: latest
+
+
+- hosts: all
+  become: true
+  tasks:
+
+  - name: install unzip
+    package:
+       name: unzip
+
+  - name: install terraform
+    unarchive:
+      src: https://releases.hashicorp.com/terraform/1.12.2/terraform_1.12.2_linux_386.zip
+      dest: /usr/local/bin
+      remote_src: yes
+      mode: 0755
+      owner: root
+      group: root
+
+
+
+
+
+
+
+
+
+
+
+
+
+
