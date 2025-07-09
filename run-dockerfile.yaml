@@ -1,0 +1,6 @@
+---
+- name: "Build container with ansible
+  hosts: localhost
+  tasks:
+  - name: Build docker image from Dockerfile
+    command: docker build -t my
